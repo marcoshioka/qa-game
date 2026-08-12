@@ -6,6 +6,11 @@ export interface TouchInputState {
   jumpPressed: boolean;
 }
 
+interface ButtonParts {
+  circle: Phaser.GameObjects.Arc;
+  label: Phaser.GameObjects.Text;
+}
+
 const ALPHA_IDLE = 0.35;
 const ALPHA_ACTIVE = 0.65;
 const BUTTON_RADIUS = 34;
@@ -16,41 +21,42 @@ export class TouchControls {
   private rightDown = false;
   private jumpQueued = false;
 
+  private scene: Phaser.Scene;
+  private leftBtn: ButtonParts;
+  private rightBtn: ButtonParts;
+  private jumpBtn: ButtonParts;
+
   constructor(scene: Phaser.Scene) {
-    const { width, height } = scene.cameras.main;
-    const y = height - MARGIN - BUTTON_RADIUS;
+    this.scene = scene;
 
-    const leftX = MARGIN + BUTTON_RADIUS;
-    const rightX = leftX + BUTTON_RADIUS * 2 + 18;
-    const jumpX = width - MARGIN - BUTTON_RADIUS;
+    this.leftBtn = this.makeButton(scene, "◀");
+    this.rightBtn = this.makeButton(scene, "▶");
+    this.jumpBtn = this.makeButton(scene, "▲");
 
-    const leftBtn = this.makeButton(scene, leftX, y, "◀");
-    const rightBtn = this.makeButton(scene, rightX, y, "▶");
-    const jumpBtn = this.makeButton(scene, jumpX, y, "▲");
+    this.bindHold(this.leftBtn.circle, (down) => (this.leftDown = down));
+    this.bindHold(this.rightBtn.circle, (down) => (this.rightDown = down));
 
-    this.bindHold(leftBtn, (down) => (this.leftDown = down));
-    this.bindHold(rightBtn, (down) => (this.rightDown = down));
-
-    jumpBtn.on(Phaser.Input.Events.POINTER_DOWN, () => {
+    this.jumpBtn.circle.on(Phaser.Input.Events.POINTER_DOWN, () => {
       this.jumpQueued = true;
-      jumpBtn.setAlpha(ALPHA_ACTIVE);
+      this.jumpBtn.circle.setAlpha(ALPHA_ACTIVE);
     });
-    const releaseJump = () => jumpBtn.setAlpha(ALPHA_IDLE);
-    jumpBtn.on(Phaser.Input.Events.POINTER_UP, releaseJump);
-    jumpBtn.on(Phaser.Input.Events.POINTER_OUT, releaseJump);
+    const releaseJump = () => this.jumpBtn.circle.setAlpha(ALPHA_IDLE);
+    this.jumpBtn.circle.on(Phaser.Input.Events.POINTER_UP, releaseJump);
+    this.jumpBtn.circle.on(Phaser.Input.Events.POINTER_OUT, releaseJump);
+
+    this.layout();
+    scene.scale.on(Phaser.Scale.Events.RESIZE, this.layout, this);
+    scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      scene.scale.off(Phaser.Scale.Events.RESIZE, this.layout, this);
+    });
   }
 
-  private makeButton(
-    scene: Phaser.Scene,
-    x: number,
-    y: number,
-    label: string
-  ): Phaser.GameObjects.Arc {
-    const circle = scene.add.circle(x, y, BUTTON_RADIUS, 0xffffff, ALPHA_IDLE);
+  private makeButton(scene: Phaser.Scene, label: string): ButtonParts {
+    const circle = scene.add.circle(0, 0, BUTTON_RADIUS, 0xffffff, ALPHA_IDLE);
     circle.setScrollFactor(0).setDepth(50).setInteractive({ useHandCursor: false });
 
-    scene.add
-      .text(x, y, label, {
+    const text = scene.add
+      .text(0, 0, label, {
         fontFamily: "monospace",
         fontSize: "22px",
         color: "#1b1f27",
@@ -59,7 +65,26 @@ export class TouchControls {
       .setScrollFactor(0)
       .setDepth(51);
 
-    return circle;
+    return { circle, label: text };
+  }
+
+  private layout(): void {
+    const width = this.scene.scale.width;
+    const height = this.scene.scale.height;
+    const y = height - MARGIN - BUTTON_RADIUS;
+
+    const leftX = MARGIN + BUTTON_RADIUS;
+    const rightX = leftX + BUTTON_RADIUS * 2 + 18;
+    const jumpX = width - MARGIN - BUTTON_RADIUS;
+
+    this.placeButton(this.leftBtn, leftX, y);
+    this.placeButton(this.rightBtn, rightX, y);
+    this.placeButton(this.jumpBtn, jumpX, y);
+  }
+
+  private placeButton(button: ButtonParts, x: number, y: number): void {
+    button.circle.setPosition(x, y);
+    button.label.setPosition(x, y);
   }
 
   private bindHold(

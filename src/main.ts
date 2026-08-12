@@ -1,21 +1,24 @@
 import Phaser from "phaser";
-import { gameConfig } from "./config/gameConfig";
+import { gameConfig, GAME_HEIGHT } from "./config/gameConfig";
 
-const game = new Phaser.Game(gameConfig);
+const MIN_WIDTH = 480;
+const MAX_WIDTH = 1400;
 
-const portraitQuery = window.matchMedia("(orientation: portrait)");
-const coarsePointerQuery = window.matchMedia("(pointer: coarse)");
-
-function syncRunState(): void {
-  const blockedByOrientation = portraitQuery.matches && coarsePointerQuery.matches;
-
-  if (blockedByOrientation) {
-    game.loop.sleep();
-  } else {
-    game.loop.wake();
-  }
+function computeWidth(): number {
+  const aspect = window.innerWidth / window.innerHeight;
+  return Phaser.Math.Clamp(Math.round(GAME_HEIGHT * aspect), MIN_WIDTH, MAX_WIDTH);
 }
 
-portraitQuery.addEventListener("change", syncRunState);
-coarsePointerQuery.addEventListener("change", syncRunState);
-syncRunState();
+const game = new Phaser.Game({
+  ...gameConfig,
+  width: computeWidth(),
+  height: GAME_HEIGHT,
+});
+
+function resizeToViewport(): void {
+  game.scale.getParentBounds();
+  game.scale.setGameSize(computeWidth(), GAME_HEIGHT);
+}
+
+window.addEventListener("resize", resizeToViewport);
+window.addEventListener("orientationchange", resizeToViewport);

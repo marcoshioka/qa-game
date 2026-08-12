@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import { SceneKeys } from "../config/assetKeys";
-import { GAME_WIDTH, GAME_HEIGHT } from "../config/gameConfig";
 import { soundManager } from "../audio/SoundManager";
 
 interface GameOverData {
@@ -22,8 +21,8 @@ export class GameOverScene extends Phaser.Scene {
   create(data: GameOverData): void {
     soundManager.playGameOver();
 
-    const centerX = GAME_WIDTH / 2;
-    const centerY = GAME_HEIGHT / 2;
+    const centerX = this.scale.width / 2;
+    const centerY = this.scale.height / 2;
     const reasonText = REASON_TEXT[data.reason ?? "fall"];
     const isTouch = this.sys.game.device.input.touch;
 

@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import { SceneKeys } from "../config/assetKeys";
-import { GAME_WIDTH, GAME_HEIGHT } from "../config/gameConfig";
 import { soundManager } from "../audio/SoundManager";
 
 interface VictoryData {
@@ -15,8 +14,8 @@ export class VictoryScene extends Phaser.Scene {
   create(data: VictoryData): void {
     soundManager.playVictory();
 
-    const centerX = GAME_WIDTH / 2;
-    const centerY = GAME_HEIGHT / 2;
+    const centerX = this.scale.width / 2;
+    const centerY = this.scale.height / 2;
     const isTouch = this.sys.game.device.input.touch;
 
     this.add
