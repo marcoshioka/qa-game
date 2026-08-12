@@ -6,14 +6,20 @@ body {
   height: 100%;
   background: #0d1117;
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #game-container {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: none;
 }
 
 #game-container canvas {

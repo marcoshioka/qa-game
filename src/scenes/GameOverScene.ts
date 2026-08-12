@@ -25,6 +25,7 @@ export class GameOverScene extends Phaser.Scene {
     const centerX = GAME_WIDTH / 2;
     const centerY = GAME_HEIGHT / 2;
     const reasonText = REASON_TEXT[data.reason ?? "fall"];
+    const isTouch = this.sys.game.device.input.touch;
 
     this.add
       .text(centerX, centerY - 80, "PIPELINE FALHOU", {
@@ -52,11 +53,16 @@ export class GameOverScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     const retryText = this.add
-      .text(centerX, centerY + 90, "PRESSIONE ESPAÇO PARA TENTAR NOVAMENTE", {
-        fontFamily: "monospace",
-        fontSize: "18px",
-        color: "#2ecc71",
-      })
+      .text(
+        centerX,
+        centerY + 90,
+        isTouch ? "TOQUE PARA TENTAR NOVAMENTE" : "PRESSIONE ESPAÇO PARA TENTAR NOVAMENTE",
+        {
+          fontFamily: "monospace",
+          fontSize: "18px",
+          color: "#2ecc71",
+        }
+      )
       .setOrigin(0.5);
 
     this.tweens.add({

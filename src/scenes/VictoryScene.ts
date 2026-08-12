@@ -17,9 +17,10 @@ export class VictoryScene extends Phaser.Scene {
 
     const centerX = GAME_WIDTH / 2;
     const centerY = GAME_HEIGHT / 2;
+    const isTouch = this.sys.game.device.input.touch;
 
     this.add
-      .text(centerX, centerY - 80, "BUILD VERDE!", {
+      .text(centerX, centerY - 110, "BUILD VERDE!", {
         fontFamily: "monospace",
         fontSize: "44px",
         color: "#2ecc71",
@@ -28,15 +29,24 @@ export class VictoryScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(centerX, centerY - 20, "Você escapou da pipeline quebrada.", {
+      .text(centerX, centerY - 55, "Você concluiu o Bug Hunter com sucesso!", {
         fontFamily: "monospace",
-        fontSize: "18px",
+        fontSize: "20px",
+        color: "#ffffff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(centerX, centerY - 15, "Você escapou da pipeline quebrada.", {
+        fontFamily: "monospace",
+        fontSize: "16px",
         color: "#9aa4b2",
       })
       .setOrigin(0.5);
 
     this.add
-      .text(centerX, centerY + 20, `Logs coletados: ${data.score ?? 0}`, {
+      .text(centerX, centerY + 25, `Logs coletados: ${data.score ?? 0}`, {
         fontFamily: "monospace",
         fontSize: "20px",
         color: "#ffd166",
@@ -44,11 +54,16 @@ export class VictoryScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     const retryText = this.add
-      .text(centerX, centerY + 90, "PRESSIONE ESPAÇO PARA JOGAR NOVAMENTE", {
-        fontFamily: "monospace",
-        fontSize: "18px",
-        color: "#2f81f7",
-      })
+      .text(
+        centerX,
+        centerY + 95,
+        isTouch ? "TOQUE PARA JOGAR NOVAMENTE" : "PRESSIONE ESPAÇO PARA JOGAR NOVAMENTE",
+        {
+          fontFamily: "monospace",
+          fontSize: "18px",
+          color: "#2f81f7",
+        }
+      )
       .setOrigin(0.5);
 
     this.tweens.add({

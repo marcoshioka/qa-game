@@ -7,6 +7,7 @@ import { Hazard } from "../entities/Hazard";
 import { levels } from "../data/levels";
 import { LevelData } from "../data/types";
 import { soundManager } from "../audio/SoundManager";
+import { TouchControls } from "../ui/TouchControls";
 
 interface GameSceneData {
   levelIndex?: number;
@@ -21,6 +22,7 @@ export class GameScene extends Phaser.Scene {
   private enemies: Enemy[] = [];
   private hazards: Hazard[] = [];
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private touchControls?: TouchControls;
   private hudText!: Phaser.GameObjects.Text;
   private currentLevel!: LevelData;
   private levelIndex = 0;
@@ -71,6 +73,10 @@ export class GameScene extends Phaser.Scene {
 
     this.cursors = this.input.keyboard!.createCursorKeys();
 
+    if (this.sys.game.device.input.touch) {
+      this.touchControls = new TouchControls(this);
+    }
+
     this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
 
     this.buildHud();
@@ -80,7 +86,14 @@ export class GameScene extends Phaser.Scene {
   update(): void {
     if (this.isEnding) return;
 
-    this.player.update(this.cursors);
+    const touchState = this.touchControls?.getState();
+
+    this.player.update({
+      left: this.cursors.left.isDown || !!touchState?.left,
+      right: this.cursors.right.isDown || !!touchState?.right,
+      jump: Phaser.Input.Keyboard.JustDown(this.cursors.up) || !!touchState?.jumpPressed,
+    });
+
     this.enemies.forEach((enemy) => enemy.update());
 
     if (this.player.y > this.currentLevel.killY) {
