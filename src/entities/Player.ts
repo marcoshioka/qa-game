@@ -5,6 +5,12 @@ import { soundManager } from "../audio/SoundManager";
 const MOVE_SPEED = 240;
 const JUMP_VELOCITY = -560;
 
+export interface PlayerInput {
+  left: boolean;
+  right: boolean;
+  jump: boolean;
+}
+
 export class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, TextureKeys.Player);
@@ -17,20 +23,20 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setSize(this.width * 0.7, this.height * 0.9);
   }
 
-  update(cursors: Phaser.Types.Input.Keyboard.CursorKeys): void {
+  update(input: PlayerInput): void {
     const onGround = this.body!.blocked.down || this.body!.touching.down;
 
-    if (cursors.left.isDown) {
+    if (input.left) {
       this.setVelocityX(-MOVE_SPEED);
       this.setFlipX(true);
-    } else if (cursors.right.isDown) {
+    } else if (input.right) {
       this.setVelocityX(MOVE_SPEED);
       this.setFlipX(false);
     } else {
       this.setVelocityX(0);
     }
 
-    if (Phaser.Input.Keyboard.JustDown(cursors.up) && onGround) {
+    if (input.jump && onGround) {
       this.setVelocityY(JUMP_VELOCITY);
       soundManager.playJump();
     }

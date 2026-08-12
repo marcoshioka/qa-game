@@ -23,6 +23,10 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     target: 60,
     min: 20,
   },
+  input: {
+    activePointers: 3,
+  },
+  disableContextMenu: true,
   physics: {
     default: "arcade",
     arcade: {

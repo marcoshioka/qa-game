@@ -9,6 +9,7 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     const centerX = GAME_WIDTH / 2;
+    const isTouch = this.sys.game.device.input.touch;
 
     this.add
       .text(centerX, 150, "BUG HUNTER", {
@@ -42,15 +43,21 @@ export class MenuScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(centerX, 380, "← → mover   ↑ pular", {
-        fontFamily: "monospace",
-        fontSize: "18px",
-        color: "#ffd166",
-      })
+      .text(
+        centerX,
+        380,
+        isTouch ? "Toque nos botões na tela para mover e pular" : "← → mover   ↑ pular",
+        {
+          fontFamily: "monospace",
+          fontSize: isTouch ? "16px" : "18px",
+          color: "#ffd166",
+          align: "center",
+        }
+      )
       .setOrigin(0.5);
 
     const startText = this.add
-      .text(centerX, 450, "PRESSIONE ESPAÇO PARA COMEÇAR", {
+      .text(centerX, 450, isTouch ? "TOQUE PARA COMEÇAR" : "PRESSIONE ESPAÇO PARA COMEÇAR", {
         fontFamily: "monospace",
         fontSize: "20px",
         color: "#2ecc71",
