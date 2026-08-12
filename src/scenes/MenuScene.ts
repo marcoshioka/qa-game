@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import { SceneKeys } from "../config/assetKeys";
-import { GAME_WIDTH } from "../config/gameConfig";
 
 export class MenuScene extends Phaser.Scene {
   constructor() {
@@ -8,7 +7,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create(): void {
-    const centerX = GAME_WIDTH / 2;
+    const centerX = this.scale.width / 2;
     const isTouch = this.sys.game.device.input.touch;
 
     this.add
